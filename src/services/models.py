@@ -1,6 +1,9 @@
 from sqlalchemy import Table, Column, DateTime, String, Integer, ForeignKey
 from sqlalchemy.orm import mapper
 from database import metadata, db_session
+from sqlalchemy.sql import func
+from sqlalchemy.dialects.postgresql import UUID, DATE
+from uuid import uuid4
 
 
 class Photo(object):
@@ -18,38 +21,30 @@ class Photo(object):
 class Thumbnail(object):
     query = db_session.query_property()
 
-    def __init__(self, uuid=None, photo_uuid=None,
-                 width=None, height=None, url=None, created_at=None):
-        self.uuid = uuid
+    def __init__(self, photo_uuid=None,
+                 width=None, height=None, url=None):
         self.photo_uuid = photo_uuid
         self.width = width
         self.height = height
         self.url = url
-        self.created_at = created_at
 
 photos = Table(
     'photos', metadata,
-    Column('uuid', String, primary_key=True),
+    Column('uuid', UUID(as_uuid=True), primary_key=True),
     Column('url', String),
     Column('status', String),
     Column('created_at', DateTime)
 )
 
 thumbnails = Table(
-    'photo_thumbnail', metadata,
-    Column('uuid', String, primary_key=True),
-    Column('photo_uuid', ForeignKey('photos.uuid')),
+    'photo_thumbnails', metadata,
+    Column('uuid', UUID(as_uuid=True), primary_key=True, default=uuid4),
+    Column('photo_uuid', UUID(as_uuid=True), ForeignKey('photos.uuid')), 
     Column('width', Integer),
     Column('height', Integer),
     Column('url', String),
-    Column('created_at', DateTime)
+    Column('created_at', DateTime, server_default=func.now())
 )
 
 mapper(Photo, photos)
 mapper(Thumbnail, thumbnails)
-
-
-# if __name__ == '__main__':
-#     from sqlalchemy.orm import scoped_session, sessionmaker, Query
-#     items = Photo.query.all()
-#     print(len(items))

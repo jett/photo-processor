@@ -12,6 +12,7 @@ pillow = "*"
 psycopg2-binary = "*"
 flask-sqlalchemy = "*"
 marshmallow-sqlalchemy = "*"
+celery = "*"
 
 [requires]
 python_version = "3.7"

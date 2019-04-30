@@ -1,4 +1,4 @@
-from marshmallow import Schema
+from marshmallow import Schema, ValidationError, validates_schema
 
 
 class PhotoSchema(Schema):
